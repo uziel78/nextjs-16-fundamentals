@@ -6,9 +6,12 @@ import { ThemeToggle } from './theme-toggle';
 import { Button } from '@/components/ui/button';
 import { useConvexAuth } from 'convex/react';
 import { authClient } from '@/lib/auth-client';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 export function Navbar() {
   const { isAuthenticated, isLoading } = useConvexAuth();
+  const router = useRouter();
   return (
     <nav className='w-full py-5 flex items-center justify-between'>
       <div className='flex items-center gap-8'>
@@ -32,7 +35,23 @@ export function Navbar() {
 
       <div className='flex items-center gap-2'>
         {isLoading ? null : isAuthenticated ? (
-          <Button onClick={() => authClient.signOut({})}>Logout</Button>
+          <Button
+            onClick={() =>
+              authClient.signOut({
+                fetchOptions: {
+                  onSuccess: () => {
+                    toast.success('Logged out successfully');
+                    router.push('/');
+                  },
+                  onError: (error) => {
+                    toast.error(error.error.message);
+                  },
+                },
+              })
+            }
+          >
+            Logout
+          </Button>
         ) : (
           <>
             <Link className={buttonVariants()} href='/auth/sign-up'>
