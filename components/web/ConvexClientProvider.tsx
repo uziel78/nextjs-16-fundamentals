@@ -7,7 +7,7 @@ import { ConvexBetterAuthProvider } from '@convex-dev/better-auth/react';
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!, {
   // This option will cause the provider to throw an error if the user is not authenticated
-  //expectAuth: true,
+  expectAuth: true,
 });
 
 export function ConvexClientProvider({
