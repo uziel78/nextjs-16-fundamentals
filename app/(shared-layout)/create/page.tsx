@@ -19,8 +19,13 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import z from 'zod';
+import { useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 
 export default function CreateRoute() {
+  const mutation = useMutation(api.posts.createPost);
   const form = useForm({
     resolver: zodResolver(postSchema),
     defaultValues: {
@@ -28,6 +33,13 @@ export default function CreateRoute() {
       content: '',
     },
   });
+
+  function onSubmit(values: z.infer<typeof postSchema>) {
+    mutation({
+      body: values.content,
+      title: values.title,
+    });
+  }
 
   return (
     <div className='py-12'>
@@ -46,8 +58,8 @@ export default function CreateRoute() {
           <CardDescription>Create a new blog article.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
-            <FieldGroup>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FieldGroup className='gap-y-4'>
               <Controller
                 name='title'
                 control={form.control}
@@ -83,6 +95,8 @@ export default function CreateRoute() {
                   </Field>
                 )}
               />
+
+              <Button>Create Post</Button>
             </FieldGroup>
           </form>
         </CardContent>
