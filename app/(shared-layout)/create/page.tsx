@@ -8,6 +8,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { postSchema } from '@/app/schemas/blog';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
@@ -23,8 +25,12 @@ import { Button } from '@/components/ui/button';
 import z from 'zod';
 import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function CreateRoute() {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
   const mutation = useMutation(api.posts.createPost);
   const form = useForm({
     resolver: zodResolver(postSchema),
@@ -35,9 +41,14 @@ export default function CreateRoute() {
   });
 
   function onSubmit(values: z.infer<typeof postSchema>) {
-    mutation({
-      body: values.content,
-      title: values.title,
+    startTransition(() => {
+      mutation({
+        body: values.content,
+        title: values.title,
+      });
+
+      toast.success('Everything was fine. Post created successfully!');
+      router.push('/');
     });
   }
 
@@ -96,7 +107,16 @@ export default function CreateRoute() {
                 )}
               />
 
-              <Button>Create Post</Button>
+              <Button disabled={isPending}>
+                {isPending ? (
+                  <>
+                    <Loader2 className='size-4 animate-spin ' />
+                    <span>Loading...</span>
+                  </>
+                ) : (
+                  <span>Create Post</span>
+                )}
+              </Button>
             </FieldGroup>
           </form>
         </CardContent>
