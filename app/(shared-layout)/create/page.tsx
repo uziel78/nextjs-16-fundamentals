@@ -25,19 +25,22 @@ import z from 'zod';
 import { useTransition } from 'react';
 import { createBlogAction } from '@/app/actions';
 
+// This is the page for creating a new blog post. It uses react-hook-form for form handling and validation, and it uses a transition to show a loading state while the form is being submitted.
 export default function CreateRoute() {
   const [isPending, startTransition] = useTransition();
+
   const form = useForm({
     resolver: zodResolver(postSchema),
     defaultValues: {
       title: '',
       content: '',
+      image: undefined,
     },
   });
 
   function onSubmit(values: z.infer<typeof postSchema>) {
     startTransition(async () => {
-      console.log('Hey, this runs on the client-side');
+      //console.log('Hey, this runs on the client-side');
       await createBlogAction(values);
     });
   }
@@ -89,6 +92,29 @@ export default function CreateRoute() {
                       aria-invalid={fieldState.invalid}
                       placeholder='super cool blog content'
                       {...field}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name='image'
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldLabel>Image</FieldLabel>
+                    <Input
+                      aria-invalid={fieldState.invalid}
+                      placeholder='select image here'
+                      type='file'
+                      accept='image/*'
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        field.onChange(file);
+                      }}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />

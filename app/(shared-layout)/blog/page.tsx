@@ -29,7 +29,7 @@ export default function BlogPage() {
 // This component fetches the list of blog posts and renders them. It is wrapped in a Suspense component to show a loading state while the data is being fetched.
 async function LoadBlogList() {
   //suspense test
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+  //await new Promise((resolve) => setTimeout(resolve, 3000));
 
   const data = await fetchQuery(api.posts.getPosts);
 
