@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        hostname: 'acoustic-mastiff-678.convex.cloud',
+        protocol: 'https',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

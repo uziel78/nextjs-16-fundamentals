@@ -15,6 +15,7 @@ export const createPost = mutation({
     if (!user) {
       throw new ConvexError('Not authenticated');
     }
+    // Insert the new blog post into the database, associating it with the authenticated user's ID as the author
     const blogArticle = await ctx.db.insert('posts', {
       body: args.body,
       title: args.title,
@@ -25,14 +26,29 @@ export const createPost = mutation({
   },
 });
 
+// Get all tasks, sorted by most recent first
 export const getPosts = query({
   args: {},
   handler: async (ctx) => {
     const posts = await ctx.db.query('posts').order('desc').collect();
-    return posts;
+
+    // For each post, if it has an imageStorageId, get the URL for that image from storage and include it in the returned object
+    return await Promise.all(
+      posts.map(async (post) => {
+        const resolvedImageUrl =
+          post.imageStorageId !== undefined
+            ? await ctx.storage.getUrl(post.imageStorageId)
+            : null;
+        return {
+          ...post,
+          imageUrl: resolvedImageUrl,
+        };
+      }),
+    );
   },
 });
 
+// Generate an upload URL for the client to upload an image to storage
 export const generateImageUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {

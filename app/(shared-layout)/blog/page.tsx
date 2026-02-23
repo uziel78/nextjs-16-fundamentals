@@ -28,9 +28,6 @@ export default function BlogPage() {
 
 // This component fetches the list of blog posts and renders them. It is wrapped in a Suspense component to show a loading state while the data is being fetched.
 async function LoadBlogList() {
-  //suspense test
-  //await new Promise((resolve) => setTimeout(resolve, 3000));
-
   const data = await fetchQuery(api.posts.getPosts);
 
   return (
@@ -39,10 +36,13 @@ async function LoadBlogList() {
         <Card key={post._id} className='pt-0'>
           <div className='relative h-48 w-full overflow-hidden'>
             <Image
-              src='https://images.unsplash.com/photo-1771506364945-0b6566c6cd5f?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+              src={
+                post.imageUrl ??
+                'https://images.unsplash.com/photo-1771506364945-0b6566c6cd5f?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+              }
               alt='image'
               fill
-              className='rounded-t-lg'
+              className='rounded-t-lg object-cover'
             />
           </div>
           <CardContent>
