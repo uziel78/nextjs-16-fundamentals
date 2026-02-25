@@ -6,6 +6,7 @@ import { fetchQuery } from 'convex/nextjs';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { Separator } from '@/components/ui/separator';
+import { CommentSection } from '@/components/web/CommentSection';
 
 // This file is the page for the route /blog/[postId], which shows a single blog post. It uses the postId from the URL to fetch the post data from the database and display it. For simplicity, this example just shows a placeholder image and a back button, but you can replace that with the actual post content and image once you have the data fetching set up.
 interface PostIdRouteProps {
@@ -70,6 +71,8 @@ export default async function PostIdRoute({ params }: PostIdRouteProps) {
       </p>
 
       <Separator className='my-8' />
+
+      <CommentSection />
     </div>
   );
 }

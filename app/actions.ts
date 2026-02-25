@@ -9,6 +9,7 @@ import { getToken } from '@/lib/auth-server';
 import { revalidatePath } from 'next/cache';
 //import { updateTag } from "next/cache";
 
+// This file contains server actions that can be called from your components to perform server-side logic, such as creating a new blog post. The createBlogAction function takes the form values as input, validates them, uploads the image to storage, creates a new post in the database, and then redirects the user back to the blog page. You can add more actions here for other functionalities like updating or deleting posts, handling comments, etc.
 export async function createBlogAction(values: z.infer<typeof postSchema>) {
   try {
     const parsed = postSchema.safeParse(values);
