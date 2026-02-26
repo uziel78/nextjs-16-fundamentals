@@ -19,11 +19,11 @@ interface PostIdRouteProps {
 export default async function PostIdRoute({ params }: PostIdRouteProps) {
   const { postId } = await params;
 
-  const post = await fetchQuery(api.posts.getPostById, { postId });
-  const preLoadedComments = await preloadQuery(
-    api.comments.getCommentsByPostId,
-    { postId: postId },
-  );
+  // We use Promise.all to fetch both the post data and the preloaded comments in parallel, which can improve performance by reducing the total time spent waiting for both requests to complete. The fetchQuery function is used to get the post data, while the preloadQuery function is used to fetch the comments and prepare them for use in the CommentSection component.
+  const [post, preLoadedComments] = await Promise.all([
+    await fetchQuery(api.posts.getPostById, { postId }),
+    await preloadQuery(api.comments.getCommentsByPostId, { postId: postId }),
+  ]);
 
   if (!post) {
     return (
