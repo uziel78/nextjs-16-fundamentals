@@ -2,9 +2,9 @@
 
 import { Loader2, MessageSquare } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/card';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { commentSchema } from '@/app/schemas/comment';
-import { Controller, useForm } from 'react-hook-form';
 import { Field, FieldError, FieldLabel } from '../ui/field';
 import { Textarea } from '../ui/textarea';
 import { Button } from '../ui/button';
@@ -15,15 +15,21 @@ import { api } from '@/convex/_generated/api';
 import z from 'zod';
 import { toast } from 'sonner';
 import { useTransition } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Separator } from '../ui/separator';
 
-// This component will be used in the blog post page to display a comment form and a list of comments for the post. For simplicity, this example just shows the form without the actual comment list or submission logic, but you can implement that once you have the data fetching and mutation set up.
-export function CommentSection() {
-  const [isPending, startTransition] = useTransition();
+import { Preloaded, usePreloadedQuery } from 'convex/react';
+
+// This component is responsible for rendering the comment section of a blog post. It takes preloaded comments as a prop, which are fetched on the server in the page component. The CommentSection component uses React Hook Form to handle the comment form and Convex mutations to create new comments. It also displays a list of existing comments with the author's name, avatar, and the comment body. You can customize the styling and layout as needed.
+export function CommentSection(props: {
+  preloadedComments: Preloaded<typeof api.comments.getCommentsByPostId>;
+}) {
   const params = useParams<{ postId: Id<'posts'> }>();
+  const data = usePreloadedQuery(props.preloadedComments);
+  const [isPending, startTransition] = useTransition();
 
-  // mutation use in client instead of server action because we want to optimistically update the UI with the new comment without needing to wait for a full page refresh. This allows for a smoother user experience, as the comment can appear immediately in the list of comments while the server processes the request in the background.
+  // The useMutation hook from Convex is used to create a mutation function for creating new comments. This function will be called when the comment form is submitted, allowing us to send the new comment data to the server and update the UI accordingly.
   const createComment = useMutation(api.comments.createComment);
-
   const form = useForm({
     resolver: zodResolver(commentSchema),
     defaultValues: {
@@ -32,11 +38,12 @@ export function CommentSection() {
     },
   });
 
+  // This function is called when the comment form is submitted. It uses the createComment mutation to send the new comment data to the server, then resets the form and shows a success or error toast message based on the result. The startTransition function is used to handle the asynchronous operation without blocking the UI, allowing for a smoother user experience.
   async function onSubmit(data: z.infer<typeof commentSchema>) {
     startTransition(async () => {
       try {
         await createComment(data);
-        //form.reset();
+        form.reset();
         toast.success('Comment posted');
       } catch {
         toast.error('Failed to create post');
@@ -44,17 +51,17 @@ export function CommentSection() {
     });
   }
 
-  //   if (data === undefined) {
-  //     return <p>loading...</p>;
-  //   }
+  if (data === undefined) {
+    return <p>loading...</p>;
+  }
 
   return (
     <Card>
       <CardHeader className='flex flex-row items-center gap-2 border-b'>
         <MessageSquare className='size-5' />
-        <h2 className='text-lg font-bold'>5 Comments</h2>
+        <h2 className='text-xl font-bold'>{data.length} Comments</h2>
       </CardHeader>
-      <CardContent>
+      <CardContent className='space-y-8'>
         <form className='space-y-4' onSubmit={form.handleSubmit(onSubmit)}>
           <Controller
             name='body'
@@ -73,7 +80,8 @@ export function CommentSection() {
               </Field>
             )}
           />
-          <Button className='mt-4' disabled={isPending}>
+
+          <Button disabled={isPending}>
             {isPending ? (
               <>
                 <Loader2 className='size-4 animate-spin' />
@@ -84,6 +92,38 @@ export function CommentSection() {
             )}
           </Button>
         </form>
+
+        {data?.length > 0 && <Separator />}
+
+        <section className='space-y-6'>
+          {data?.map((comment) => (
+            <div key={comment._id} className='flex gap-4'>
+              <Avatar className='size-10 shrink-0'>
+                <AvatarImage
+                  src={`https://avatar.vercel.sh/${comment.authorName}`}
+                  alt={comment.authorName}
+                />
+                <AvatarFallback>
+                  {comment.authorName.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className='flex-1 space-y-1'>
+                <div className='flex items-center justify-between'>
+                  <p className='font-semibold text-sm'>{comment.authorName}</p>
+                  <p className='text-muted-foreground text-xs'>
+                    {new Date(comment._creationTime).toLocaleDateString(
+                      'en-US',
+                    )}
+                  </p>
+                </div>
+
+                <p className='text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed'>
+                  {comment.body}
+                </p>
+              </div>
+            </div>
+          ))}
+        </section>
       </CardContent>
     </Card>
   );
