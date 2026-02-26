@@ -6,6 +6,20 @@ import { buttonVariants } from '@/components/ui/button';
 import { fetchQuery } from 'convex/nextjs';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { Metadata } from 'next';
+
+export const dynamic = 'force-static';
+export const revalidate = 30; // Revalidate the page every 30 seconds
+
+export const metadata: Metadata = {
+  title: 'Convex & Next.js 16 Fundamentals - Blog',
+  description:
+    'Read our latests articles and insights about Convex and Next.js 16',
+  category: 'Web Development',
+  authors: [{ name: 'RH' }],
+};
+
+//export default function Layout() {}
 
 // This is the main blog page that lists all the blog posts. It uses Suspense to show a loading state while the data is being fetched.
 export default function BlogPage() {

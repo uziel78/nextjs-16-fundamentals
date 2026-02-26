@@ -7,12 +7,35 @@ import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { Separator } from '@/components/ui/separator';
 import { CommentSection } from '@/components/web/CommentSection';
+import { Metadata } from 'next';
 
 // This file is the page for the route /blog/[postId], which shows a single blog post. It uses the postId from the URL to fetch the post data from the database and display it. For simplicity, this example just shows a placeholder image and a back button, but you can replace that with the actual post content and image once you have the data fetching set up.
 interface PostIdRouteProps {
   params: Promise<{
     postId: Id<'posts'>;
   }>;
+}
+
+// The generateMetadata function is used to dynamically generate the metadata for the page based on the post data. It fetches the post data using the postId from the URL and returns a metadata object with the post title and description. If the post is not found, it returns a default metadata object indicating that the post was not found.
+export async function generateMetadata({
+  params,
+}: PostIdRouteProps): Promise<Metadata> {
+  const { postId } = await params;
+
+  const post = await fetchQuery(api.posts.getPostById, { postId: postId });
+
+  if (!post) {
+    return {
+      title: 'Post not found',
+      description: 'The post you are looking for does not exist.',
+    };
+  }
+  return {
+    title: post.title,
+    description: post.body,
+    category: 'Web Development',
+    authors: [{ name: 'RH' }],
+  };
 }
 
 // This page will be rendered on the server, so we can use async/await to fetch the post data before rendering the page. You can use the postId from the URL to query your database and get the post content and image URL, then pass that data to the component to render it.
