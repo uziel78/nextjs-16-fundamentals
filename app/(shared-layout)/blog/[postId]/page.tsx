@@ -10,6 +10,7 @@ import { CommentSection } from '@/components/web/CommentSection';
 import { Metadata } from 'next';
 import { PostPresence } from '@/components/web/PostPresence';
 import { getToken } from '@/lib/auth-server';
+import { redirect } from 'next/navigation';
 
 // This file is the page for the route /blog/[postId], which shows a single blog post. It uses the postId from the URL to fetch the post data from the database and display it. For simplicity, this example just shows a placeholder image and a back button, but you can replace that with the actual post content and image once you have the data fetching set up.
 interface PostIdRouteProps {
@@ -52,6 +53,11 @@ export default async function PostIdRoute({ params }: PostIdRouteProps) {
     await preloadQuery(api.comments.getCommentsByPostId, { postId: postId }),
     await fetchQuery(api.presence.getUserId, {}, { token }),
   ]);
+
+  // If there is no user ID (i.e., the user is not authenticated), we redirect them to the login page. This ensures that only authenticated users can access the post details page. If the user is authenticated but the post is not found, we display a message indicating that no post was found.
+  if (!userId) {
+    return redirect('/auth/login');
+  }
 
   if (!post) {
     return (

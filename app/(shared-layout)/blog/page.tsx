@@ -8,6 +8,7 @@ import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
 
+// force-static ensures that the page is statically generated at build time, and revalidate allows us to specify how often the page should be re-generated. In this case, we set it to 30 seconds, which means that the page will be re-generated at most once every 30 seconds when a request comes in.
 export const dynamic = 'force-static';
 export const revalidate = 30; // Revalidate the page every 30 seconds
 
