@@ -8,6 +8,8 @@ import { Id } from '@/convex/_generated/dataModel';
 import { Separator } from '@/components/ui/separator';
 import { CommentSection } from '@/components/web/CommentSection';
 import { Metadata } from 'next';
+import { PostPresence } from '@/components/web/PostPresence';
+import { getToken } from '@/lib/auth-server';
 
 // This file is the page for the route /blog/[postId], which shows a single blog post. It uses the postId from the URL to fetch the post data from the database and display it. For simplicity, this example just shows a placeholder image and a back button, but you can replace that with the actual post content and image once you have the data fetching set up.
 interface PostIdRouteProps {
@@ -42,10 +44,13 @@ export async function generateMetadata({
 export default async function PostIdRoute({ params }: PostIdRouteProps) {
   const { postId } = await params;
 
-  // We use Promise.all to fetch both the post data and the preloaded comments in parallel, which can improve performance by reducing the total time spent waiting for both requests to complete. The fetchQuery function is used to get the post data, while the preloadQuery function is used to fetch the comments and prepare them for use in the CommentSection component.
-  const [post, preLoadedComments] = await Promise.all([
+  const token = await getToken();
+
+  // We use Promise.all to fetch the post data, pre-load the comments for the post, and get the user ID of the currently authenticated user in parallel. This way, we can optimize the loading time of the page by fetching all the necessary data at once.
+  const [post, preLoadedComments, userId] = await Promise.all([
     await fetchQuery(api.posts.getPostById, { postId }),
     await preloadQuery(api.comments.getCommentsByPostId, { postId: postId }),
+    await fetchQuery(api.presence.getUserId, {}, { token }),
   ]);
 
   if (!post) {
@@ -85,10 +90,13 @@ export default async function PostIdRoute({ params }: PostIdRouteProps) {
           {post.title}
         </h1>
 
-        <p className='text-muted-foreground text-sm'>
-          Posted on:{' '}
-          {new Date(post._creationTime).toLocaleDateString('en-NO')}{' '}
-        </p>
+        <div className='flex items-center gap-2'>
+          <p className='text-muted-foreground text-sm'>
+            Posted on:{' '}
+            {new Date(post._creationTime).toLocaleDateString('en-NO')}{' '}
+          </p>
+          {userId && <PostPresence roomId={postId} userId={userId} />}
+        </div>
       </div>
 
       <Separator className='my-8' />
