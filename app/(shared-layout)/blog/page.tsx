@@ -8,6 +8,7 @@ import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
 import { cacheLife, cacheTag } from 'next/cache';
+import { connection } from 'next/server';
 //import { connection } from 'next/server';
 //import { connection } from 'next/server';
 
@@ -50,12 +51,12 @@ async function LoadBlogList() {
   // We call connection() to ensure that the database connection is established before we try to fetch any data. This is important because if the connection is not established, the fetchQuery calls will fail. By calling connection() at the beginning of the function, we can ensure that the database connection is ready before we attempt to fetch any data.
 
   // temporeary needed for initial deployment
-  //await connection();
+  await connection();
 
   // option for caching data every hour:
-  'use cache';
-  cacheLife('hours'); // Cache the result of this function for 30 seconds
-  cacheTag('blog'); // Tag the cache with 'blog' so that we can invalidate it when a new post is created
+  //'use cache';
+  //cacheLife('hours'); // Cache the result of this function for 30 seconds
+  //cacheTag('blog'); // Tag the cache with 'blog' so that we can invalidate it when a new post is created
 
   //await connection();
   const data = await fetchQuery(api.posts.getPosts);
