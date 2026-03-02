@@ -1,6 +1,6 @@
 A full-stack blog application built with **Next.js 16**, **Convex**, and **Better Auth**. It features real-time posts and comments, full-text search, user authentication, dark/light theme support, and live presence indicators.
 
-**Live Demo:** <!-- TODO: add hosted URL here -->
+**Live Demo:** nextjs-16-fundamentals-flxvrh3uv-uziel78s-projects.vercel.app
 
 ---
 
