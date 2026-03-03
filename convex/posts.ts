@@ -3,7 +3,6 @@ import { ConvexError, v } from 'convex/values';
 import { authComponent } from './auth';
 import { Doc } from './_generated/dataModel';
 
-// Create a new task with the given text
 export const createPost = mutation({
   args: {
     title: v.string(),
@@ -16,30 +15,30 @@ export const createPost = mutation({
     if (!user) {
       throw new ConvexError('Not authenticated');
     }
-    // Insert the new blog post into the database, associating it with the authenticated user's ID as the author
+
     const blogArticle = await ctx.db.insert('posts', {
       body: args.body,
       title: args.title,
       authorId: user._id,
       imageStorageId: args.imageStorageId,
     });
+
     return blogArticle;
   },
 });
 
-// Get all tasks, sorted by most recent first
 export const getPosts = query({
   args: {},
   handler: async (ctx) => {
     const posts = await ctx.db.query('posts').order('desc').collect();
 
-    // For each post, if it has an imageStorageId, get the URL for that image from storage and include it in the returned object
     return await Promise.all(
       posts.map(async (post) => {
         const resolvedImageUrl =
           post.imageStorageId !== undefined
             ? await ctx.storage.getUrl(post.imageStorageId)
             : null;
+
         return {
           ...post,
           imageUrl: resolvedImageUrl,
@@ -49,7 +48,6 @@ export const getPosts = query({
   },
 });
 
-// Generate an upload URL for the client to upload an image to storage
 export const generateImageUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {
@@ -63,7 +61,6 @@ export const generateImageUploadUrl = mutation({
   },
 });
 
-// Get a single post by its ID, including the resolved image URL if it has an associated image
 export const getPostById = query({
   args: {
     postId: v.id('posts'),
@@ -87,7 +84,6 @@ export const getPostById = query({
   },
 });
 
-// This is the searchPosts query, which allows us to perform a full-text search on the posts in our database. It takes a search term and a limit as arguments, and returns an array of posts that match the search term in either the title or body fields. The search is performed using the search indexes we defined in our schema, which allows for efficient full-text search on those fields.
 interface searchResultTypes {
   _id: string;
   title: string;

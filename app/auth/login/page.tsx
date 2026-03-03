@@ -23,8 +23,6 @@ import { authClient } from '@/lib/auth-client';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
-import { start } from 'repl';
-import { is } from 'zod/locales';
 import { Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
