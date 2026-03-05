@@ -1,9 +1,8 @@
 'use client';
 
+import { Button, buttonVariants } from '@/components/ui/button';
 import Link from 'next/link';
-import { buttonVariants } from '@/components/ui/button';
 import { ThemeToggle } from './theme-toggle';
-import { Button } from '@/components/ui/button';
 import { useConvexAuth } from 'convex/react';
 import { authClient } from '@/lib/auth-client';
 import { toast } from 'sonner';
@@ -14,13 +13,14 @@ export function Navbar() {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const router = useRouter();
   return (
-    <nav className='w-full py-5 flex items-center justify-between'>
-      <div className='flex items-center gap-8'>
+    <nav className='w-full  py-5 flex items-center justify-between'>
+      <div className='flex items-center gap-8 '>
         <Link href='/'>
           <h1 className='text-3xl font-bold'>
             Next<span className='text-primary'>Pro</span>
           </h1>
         </Link>
+
         <div className='flex items-center gap-2'>
           <Link className={buttonVariants({ variant: 'ghost' })} href='/'>
             Home
