@@ -1,6 +1,7 @@
 'use client';
 
 import { signUpSchema } from '@/app/schemas/auth';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -8,40 +9,40 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import {
+  Field,
   FieldError,
   FieldGroup,
-  Field,
   FieldLabel,
 } from '@/components/ui/field';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { authClient } from '@/lib/auth-client';
-import z from 'zod';
-import router from 'next/router';
-import { toast } from 'sonner';
-import { useTransition } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import z from 'zod';
 
 export default function SignUpPage() {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      name: '',
       email: '',
+      name: '',
       password: '',
     },
   });
 
   async function onSubmit(data: z.infer<typeof signUpSchema>) {
     startTransition(async () => {
-      const { error } = await authClient.signUp.email({
+      await authClient.signUp.email({
         email: data.email,
-        password: data.password,
         name: data.name,
+        password: data.password,
         fetchOptions: {
           onSuccess: () => {
             toast.success('Account created successfully');
@@ -52,13 +53,8 @@ export default function SignUpPage() {
           },
         },
       });
-
-      if (error) {
-        console.error('Sign up error:', error);
-      }
     });
   }
-
   return (
     <Card>
       <CardHeader>
@@ -85,7 +81,6 @@ export default function SignUpPage() {
                 </Field>
               )}
             />
-
             <Controller
               name='email'
               control={form.control}
@@ -94,7 +89,7 @@ export default function SignUpPage() {
                   <FieldLabel>Email</FieldLabel>
                   <Input
                     aria-invalid={fieldState.invalid}
-                    placeholder='john.doe@example.com'
+                    placeholder='john@doe.com'
                     type='email'
                     {...field}
                   />
@@ -113,7 +108,7 @@ export default function SignUpPage() {
                   <FieldLabel>Password</FieldLabel>
                   <Input
                     aria-invalid={fieldState.invalid}
-                    placeholder='********'
+                    placeholder='*****'
                     type='password'
                     {...field}
                   />
@@ -127,11 +122,11 @@ export default function SignUpPage() {
             <Button disabled={isPending}>
               {isPending ? (
                 <>
-                  <Loader2 className='size-4 animate-spin ' />
+                  <Loader2 className='size-4 animate-spin' />
                   <span>Loading...</span>
                 </>
               ) : (
-                <span>Sign up</span>
+                <span>Signup</span>
               )}
             </Button>
           </FieldGroup>
