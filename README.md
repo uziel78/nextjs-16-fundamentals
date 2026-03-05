@@ -83,3 +83,7 @@ pnpm start
 | next-themes     | <https://github.com/pacocoursey/next-themes> |
 | Sonner          | <https://sonner.emilkowal.dev>               |
 | pnpm            | <https://pnpm.io>                            |
+
+<!-- https://dashboard.convex.dev/t/rune-husa78/nextjs-16-fundamentals/acoustic-mastiff-678 -->
+
+<!-- https://nextjs-16-fundamentals.vercel.app/ -->
