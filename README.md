@@ -2,7 +2,6 @@ A full-stack blog application built with **Next.js 16**, **Convex**, and **Bette
 
 **Live Demo:** [nextjs-16-fundamentals.vercel.app](https://nextjs-16-fundamentals.vercel.app)
 
-
 ## Getting Started
 
 ### Prerequisites
